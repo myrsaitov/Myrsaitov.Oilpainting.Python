@@ -7,7 +7,8 @@ def image_save(
         path,
         index,
         suffix,
-        image):
+        image
+):
 
     # Добавляет индекс в начале файла для удобства сортировки по имени
     file_path = path + "/" + str(index).zfill(4) + suffix + ".jpg"

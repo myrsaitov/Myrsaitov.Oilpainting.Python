@@ -10,10 +10,11 @@ from image_save import image_save
 # https://appdividend.com/2022/03/15/python-cv2-dilate/
 
 
-def main(
+def morphological_image_processing(
         main_output_path,
         size,
-        image):
+        image
+):
 
     # Путь к сохраняемым файлам
     output_path = main_output_path + "/morphological_size_" + str(size).zfill(4)
@@ -41,7 +42,9 @@ def main(
             cv2.dilate(
                 image,
                 kernel,
-                iterations=iterations))
+                iterations=iterations
+            )
+        )
 
         image_index += 1
 
@@ -50,7 +53,8 @@ def main(
         output_path,
         image_index,
         "_original",
-        image)
+        image
+    )
 
     image_index += 1
 
@@ -63,6 +67,8 @@ def main(
             cv2.erode(
                 image,
                 kernel,
-                iterations=iterations))
+                iterations=iterations
+            )
+        )
 
         image_index += 1

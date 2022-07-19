@@ -2,7 +2,10 @@ import sys
 import getopt
 import cv2
 import pathlib
-import morphological_image_processing
+
+from filtering_image_processing_blur import filtering_image_processing_blur
+from filtering_image_processing_gaussian_blur import filtering_image_processing_gaussian_blur
+from morphological_image_processing import morphological_image_processing
 
 
 # Определение функции main
@@ -52,12 +55,31 @@ def main(argv):
     # Morphological Image Processing
     #################################################
     for size in range(1, 10):
-        morphological_image_processing.main(
+        morphological_image_processing(
             output_path,
             size,
-            image)
+            image
+        )
 
+    #################################################
+    # Filtering Image Processing: Blur
+    #################################################
+    filtering_image_processing_blur(
+        output_path,
+        image
+    )
+
+    #################################################
+    # Filtering Image Processing: Gaussian Blur
+    #################################################
+    filtering_image_processing_gaussian_blur(
+        output_path,
+        image
+    )
+
+    #################################################
     # Выход из программы
+    #################################################
     sys.exit()
 
 
