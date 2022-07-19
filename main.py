@@ -3,8 +3,10 @@ import getopt
 import cv2
 import pathlib
 
+from filtering_image_processing_bilateral import filtering_image_processing_bilateral
 from filtering_image_processing_blur import filtering_image_processing_blur
 from filtering_image_processing_gaussian_blur import filtering_image_processing_gaussian_blur
+from filtering_image_processing_median_blur import filtering_image_processing_median_blur
 from morphological_image_processing import morphological_image_processing
 
 
@@ -73,6 +75,22 @@ def main(argv):
     # Filtering Image Processing: Gaussian Blur
     #################################################
     filtering_image_processing_gaussian_blur(
+        output_path,
+        image
+    )
+
+    #################################################
+    # Filtering Image Processing: Median Blur
+    #################################################
+    filtering_image_processing_median_blur(
+        output_path,
+        image
+    )
+
+    #################################################
+    # Filtering Image Processing: Bilateral
+    #################################################
+    filtering_image_processing_bilateral(
         output_path,
         image
     )

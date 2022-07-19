@@ -1,11 +1,9 @@
 import pathlib
-
 import cv2
+from image_save import image_save
 
 
 # https://opencv24-python-tutorials.readthedocs.io/en/latest/py_tutorials/py_imgproc/py_filtering/py_filtering.html
-from image_save import image_save
-
 
 def filtering_image_processing_blur(
         main_output_path,
@@ -19,7 +17,6 @@ def filtering_image_processing_blur(
     pathlib\
         .Path(output_path)\
         .mkdir(parents=True, exist_ok=True)
-
 
     # Начальный индекс файла
     image_index = 1
@@ -39,7 +36,7 @@ def filtering_image_processing_blur(
         image_save(
             output_path,
             image_index,
-            "_size_" + str(size).zfill(4),
+            "_blur_size_" + str(size).zfill(4),
             cv2.blur(
                 image,
                 (size, size)

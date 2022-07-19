@@ -1,18 +1,21 @@
 import pathlib
+
 import cv2
+
+
+# https://opencv24-python-tutorials.readthedocs.io/en/latest/py_tutorials/py_imgproc/py_filtering/py_filtering.html
 from image_save import image_save
 
 
 # https://opencv24-python-tutorials.readthedocs.io/en/latest/py_tutorials/py_imgproc/py_filtering/py_filtering.html
-# https://www.tutorialkart.com/opencv/python/opencv-python-gaussian-image-smoothing/
 
-def filtering_image_processing_gaussian_blur(
+def filtering_image_processing_median_blur(
         main_output_path,
         image
 ):
 
     # Путь к сохраняемым файлам
-    output_path = main_output_path + "/filtering_gaussian_blur"
+    output_path = main_output_path + "/filtering_median_blur"
 
     # Создает папку, если ее не существует
     pathlib\
@@ -37,11 +40,10 @@ def filtering_image_processing_gaussian_blur(
         image_save(
             output_path,
             image_index,
-            "_gaussian_blur_size_" + str(size).zfill(4),
-            cv2.GaussianBlur(
+            "_median_blur_size_" + str(size).zfill(4),
+            cv2.medianBlur(
                 image,
-                (size, size),
-                cv2.BORDER_DEFAULT
+                size
             )
         )
 
