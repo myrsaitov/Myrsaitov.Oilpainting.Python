@@ -1,40 +1,61 @@
 import sys
 import getopt
 import cv2
-from image_save import image_save
-from image_dilate import image_dilate
+import pathlib
+import morphological_image_processing
 
 
 # Определение функции main
 def main(argv):
-    input_file = ''
+    input_path = ''
+    output_path = ''
 
     try:
-        opts, args = getopt.getopt(argv, "hi:o:", ["ifile=", "ofile="])
+        opts, args = getopt.getopt(argv, "hi:o:", ["ipath=", "opath="])
     except getopt.GetoptError:
-        print('main.py -i <input_file>')
+        print('main.py -i <input_path> -o <output_path>')
         sys.exit(2)
 
     for opt, arg in opts:
         if opt == '-h':
-            print('main.py -i <input_file>')
+            print('main.py -i <input_path> -o <output_path>')
             sys.exit()
-        elif opt in ("-i", "--ifile"):
-            input_file = arg
+        elif opt in ("-i", "--ipath"):
+            input_path = arg
+        elif opt in ("-o", "--opath"):
+            output_path = arg
 
-    # Если входной файл не задан, то выход
-    if input_file == "":
-        print("Enter filename!")
+    # Если входной путь не задан, то выход
+    if input_path == "":
+        print("Enter input path!")
+        sys.exit()
+    # Если выходной путь не задан, то выход
+    if output_path == "":
+        print("Enter output path!")
         sys.exit()
 
-    # Открывает исходный файл
-    image = cv2.imread(input_file, 1)
+    # TODO find files in SRC dir
+    filename = "image1.jpg"
+    output_path += "/" + filename[:-4]
 
-    # Выполняет "Dilate"
-    image_save(
-        input_file,
-        "dilated",
-        image_dilate(image))
+    # Создает папку, если ее не существует
+    pathlib\
+        .Path(output_path)\
+        .mkdir(parents=True, exist_ok=True)
+
+    # Открывает исходный файл
+    image = cv2.imread(
+        input_path + "/" + filename,
+        1)
+
+    #################################################
+    # Morphological Image Processing
+    #################################################
+    for size in range(1, 10):
+        morphological_image_processing.main(
+            output_path,
+            size,
+            image)
 
     # Выход из программы
     sys.exit()

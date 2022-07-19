@@ -1,14 +1,23 @@
 import cv2
+import os.path
 
 
-# Выводит изображение на экран
+# Записывает файл с изображением на диск
 def image_save(
-        base_tittle,
+        path,
+        index,
         suffix,
         image):
 
-    cv2.imwrite(base_tittle[:-4] + "_" + suffix + ".jpg", image)
+    # Добавляет индекс в начале файла для удобства сортировки по имени
+    file_path = path + "/" + str(index).zfill(4) + suffix + ".jpg"
 
+    # Если файл существует, то он не перезаписывается
+    if os.path.exists(file_path):
+        return
+
+    # Запись файла
+    cv2.imwrite(file_path, image)
 
     # Масштабирует изображение в пределах экрана
     #image_resized = cv2.resize(image, (1024, 768))
