@@ -1,7 +1,8 @@
 import pathlib
-
 import numpy as np
 import cv2
+
+from image_process_and_save import image_process_and_save
 from image_save import image_save
 
 
@@ -12,12 +13,17 @@ from image_save import image_save
 
 def morphological_image_processing(
         main_output_path,
+        folder_index,
         size,
         image
 ):
 
+    print("*****************************************************")
+    print("*****************************************************")
+    print("Starting: morphological_image_processing()")
+
     # Путь к сохраняемым файлам
-    output_path = main_output_path + "/morphological_size_" + str(size).zfill(4)
+    output_path = main_output_path + "/" + str(folder_index).zfill(4) + "_morphological"
 
     # Создает папку, если ее не существует
     pathlib\
@@ -35,15 +41,14 @@ def morphological_image_processing(
     # Выполняет "Dilate"
     for iterations in reversed(range(1, 10)):
 
-        image_save(
+        image_process_and_save(
             output_path,
             image_index,
-            "_dilated__iterations_" + str(iterations).zfill(4),
-            cv2.dilate(
-                image,
-                kernel,
-                iterations=iterations
-            )
+            "_dilated__size" + str(size).zfill(4) + "_iterations_" + str(iterations).zfill(4),
+            cv2.dilate,
+            image,
+            kernel,
+            iterations=iterations
         )
 
         image_index += 1
@@ -60,15 +65,21 @@ def morphological_image_processing(
 
     # Выполняет "Erode"
     for iterations in range(1, 10):
-        image_save(
+        image_process_and_save(
             output_path,
             image_index,
-            "_eroded__iterations_" + str(iterations).zfill(4),
-            cv2.erode(
-                image,
-                kernel,
-                iterations=iterations
-            )
+            "_eroded__size" + str(size).zfill(4) + "_iterations_" + str(iterations).zfill(4),
+            cv2.erode,
+            image,
+            kernel,
+            iterations=iterations
         )
 
         image_index += 1
+
+    print()
+    print()
+    print("*****************************************************")
+    print("*****************************************************")
+    print()
+    print()

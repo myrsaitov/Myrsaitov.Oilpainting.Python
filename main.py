@@ -52,8 +52,8 @@ def main(argv):
     output_path += "/" + filename[:-4]
 
     # Создает папку, если ее не существует
-    pathlib\
-        .Path(output_path)\
+    pathlib \
+        .Path(output_path) \
         .mkdir(parents=True, exist_ok=True)
 
     # Открывает исходный файл
@@ -65,46 +65,54 @@ def main(argv):
     # Обработка изображений
     #################################################
 
+    # Индекс папки
+    folder_index = 1
+
     # Morphological Image Processing
-    for size in range(1, 10):
-        morphological_image_processing(
-            output_path,
-            size,
-            image
-        )
+    morphological_image_processing(
+        output_path,
+        folder_index,
+        5,  # Здесь нет диапазона, указывается только число
+        image
+    )
+    folder_index += 1
 
     # Filtering Image Processing: Blur
     filtering_image_processing_blur(
         output_path,
+        folder_index,
         range(1, 20),
         image
     )
+    folder_index += 1
 
     # Filtering Image Processing: Gaussian Blur
     filtering_image_processing_gaussian_blur(
         output_path,
+        folder_index,
         [5],
         image
     )
+    folder_index += 1
 
     # Filtering Image Processing: Median Blur
     filtering_image_processing_median_blur(
         output_path,
+        folder_index,
         [5],
         image
     )
+    folder_index += 1
 
     # Filtering Image Processing: Bilateral
     # Можно использовать для проверки, получился ли передний план (все остальное блекнет)
     filtering_image_processing_bilateral(
         output_path,
+        folder_index,
         [5, 25, 50, 100, 200, 300, 1000],
         image
     )
-
-
-
-
+    folder_index += 1
 
     #################################################
     # Выход из программы

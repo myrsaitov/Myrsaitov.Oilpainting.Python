@@ -1,16 +1,18 @@
 import pathlib
 import cv2
 
+from image_save import image_save
+from image_process_and_save import image_process_and_save
+
 
 # https://opencv24-python-tutorials.readthedocs.io/en/latest/py_tutorials/py_imgproc/py_filtering/py_filtering.html
-from image_save import image_save
-
-
 # https://opencv24-python-tutorials.readthedocs.io/en/latest/py_tutorials/py_imgproc/py_filtering/py_filtering.html
 # http://people.csail.mit.edu/sparis/bf_course/
 
+
 def filtering_image_processing_bilateral(
         main_output_path,
+        folder_index,
         sizes,
         image
 ):
@@ -20,7 +22,7 @@ def filtering_image_processing_bilateral(
     print("Starting: filtering_image_processing_bilateral()")
 
     # Путь к сохраняемым файлам
-    output_path = main_output_path + "/filtering_bilateral"
+    output_path = main_output_path + "/" + str(folder_index).zfill(4) + "_filtering_bilateral"
 
     # Создает папку, если ее не существует
     pathlib\
@@ -42,19 +44,21 @@ def filtering_image_processing_bilateral(
     # Применяет фильтр
     for size in sizes:
 
-        image_save(
+        image_process_and_save(
             output_path,
             image_index,
             "_bilateral_size_" + str(size).zfill(4),
-            cv2.bilateralFilter(
-                image,
-                size,
-                75,
-                75)
+            cv2.bilateralFilter,
+            image,
+            size,
+            75,
+            75
         )
 
         image_index += 1
 
+    print()
+    print()
     print("*****************************************************")
     print("*****************************************************")
     print()
