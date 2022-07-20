@@ -15,6 +15,9 @@ def main(argv):
     input_path = ''
     output_path = ''
 
+    #################################################
+    # Считывает параметры командной строки
+    #################################################
     try:
         opts, args = getopt.getopt(argv, "hi:o:", ["ipath=", "opath="])
     except getopt.GetoptError:
@@ -39,6 +42,11 @@ def main(argv):
         print("Enter output path!")
         sys.exit()
 
+    #################################################
+    # Считывает исходный файл изображения
+    # и подготавливает папку для результатов
+    #################################################
+
     # TODO find files in SRC dir
     filename = "image1.jpg"
     output_path += "/" + filename[:-4]
@@ -54,8 +62,10 @@ def main(argv):
         1)
 
     #################################################
-    # Morphological Image Processing
+    # Обработка изображений
     #################################################
+
+    # Morphological Image Processing
     for size in range(1, 10):
         morphological_image_processing(
             output_path,
@@ -63,37 +73,38 @@ def main(argv):
             image
         )
 
-    #################################################
     # Filtering Image Processing: Blur
-    #################################################
     filtering_image_processing_blur(
         output_path,
+        range(1, 20),
         image
     )
 
-    #################################################
     # Filtering Image Processing: Gaussian Blur
-    #################################################
     filtering_image_processing_gaussian_blur(
         output_path,
+        [5],
         image
     )
 
-    #################################################
     # Filtering Image Processing: Median Blur
-    #################################################
     filtering_image_processing_median_blur(
         output_path,
+        [5],
         image
     )
 
-    #################################################
     # Filtering Image Processing: Bilateral
-    #################################################
+    # Можно использовать для проверки, получился ли передний план (все остальное блекнет)
     filtering_image_processing_bilateral(
         output_path,
+        [5, 25, 50, 100, 200, 300, 1000],
         image
     )
+
+
+
+
 
     #################################################
     # Выход из программы

@@ -8,6 +8,7 @@ from image_save import image_save
 
 def filtering_image_processing_gaussian_blur(
         main_output_path,
+        sizes,
         image
 ):
 
@@ -32,7 +33,7 @@ def filtering_image_processing_gaussian_blur(
     image_index += 1
 
     # Применяет фильтр
-    for size in [5]:
+    for size in sizes:
 
         image_save(
             output_path,

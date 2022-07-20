@@ -1,5 +1,4 @@
 import pathlib
-
 import cv2
 
 
@@ -8,11 +7,17 @@ from image_save import image_save
 
 
 # https://opencv24-python-tutorials.readthedocs.io/en/latest/py_tutorials/py_imgproc/py_filtering/py_filtering.html
+# http://people.csail.mit.edu/sparis/bf_course/
 
 def filtering_image_processing_bilateral(
         main_output_path,
+        sizes,
         image
 ):
+
+    print("*****************************************************")
+    print("*****************************************************")
+    print("Starting: filtering_image_processing_bilateral()")
 
     # Путь к сохраняемым файлам
     output_path = main_output_path + "/filtering_bilateral"
@@ -35,7 +40,7 @@ def filtering_image_processing_bilateral(
     image_index += 1
 
     # Применяет фильтр
-    for size in [5,10,15,20,25,30,35,40,45,50]:
+    for size in sizes:
 
         image_save(
             output_path,
@@ -50,3 +55,7 @@ def filtering_image_processing_bilateral(
 
         image_index += 1
 
+    print("*****************************************************")
+    print("*****************************************************")
+    print()
+    print()
