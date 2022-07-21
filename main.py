@@ -3,11 +3,12 @@ import getopt
 import cv2
 import pathlib
 
-from filtering_image_processing_bilateral import filtering_image_processing_bilateral
-from filtering_image_processing_blur import filtering_image_processing_blur
-from filtering_image_processing_gaussian_blur import filtering_image_processing_gaussian_blur
-from filtering_image_processing_median_blur import filtering_image_processing_median_blur
-from morphological_image_processing import morphological_image_processing
+from image_processing_filtering_bilateral import image_processing_filtering_bilateral
+from image_processing_filtering_blur import image_processing_filtering_blur
+from image_processing_filtering_gaussian_blur import image_processing_filtering_gaussian_blur
+from image_processing_filtering_median_blur import image_processing_filtering_median_blur
+from image_processing_fourier_transform import image_processing_fourier_transform
+from image_processing_morphological import image_processing_morphological
 
 
 # Определение функции main
@@ -69,7 +70,7 @@ def main(argv):
     folder_index = 1
 
     # Morphological Image Processing
-    morphological_image_processing(
+    image_processing_morphological(
         output_path,
         folder_index,
         5,  # Здесь нет диапазона, указывается только число
@@ -78,7 +79,7 @@ def main(argv):
     folder_index += 1
 
     # Filtering Image Processing: Blur
-    filtering_image_processing_blur(
+    image_processing_filtering_blur(
         output_path,
         folder_index,
         range(1, 20),
@@ -87,7 +88,7 @@ def main(argv):
     folder_index += 1
 
     # Filtering Image Processing: Gaussian Blur
-    filtering_image_processing_gaussian_blur(
+    image_processing_filtering_gaussian_blur(
         output_path,
         folder_index,
         [5],
@@ -96,7 +97,7 @@ def main(argv):
     folder_index += 1
 
     # Filtering Image Processing: Median Blur
-    filtering_image_processing_median_blur(
+    image_processing_filtering_median_blur(
         output_path,
         folder_index,
         [5],
@@ -106,10 +107,18 @@ def main(argv):
 
     # Filtering Image Processing: Bilateral
     # Можно использовать для проверки, получился ли передний план (все остальное блекнет)
-    filtering_image_processing_bilateral(
+    image_processing_filtering_bilateral(
         output_path,
         folder_index,
         [5, 25, 50, 100, 200, 300, 1000],
+        image
+    )
+    folder_index += 1
+
+    # Fourier Transform
+    image_processing_fourier_transform(
+        output_path,
+        folder_index,
         image
     )
     folder_index += 1

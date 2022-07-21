@@ -1,16 +1,15 @@
 import pathlib
 import cv2
 
-from image_save import image_save
-from image_process_and_save import image_process_and_save
+from process_and_save_result import image_process_and_save
+from save_image import image_save
 
 
 # https://opencv24-python-tutorials.readthedocs.io/en/latest/py_tutorials/py_imgproc/py_filtering/py_filtering.html
-# https://opencv24-python-tutorials.readthedocs.io/en/latest/py_tutorials/py_imgproc/py_filtering/py_filtering.html
-# http://people.csail.mit.edu/sparis/bf_course/
+# https://www.tutorialkart.com/opencv/python/opencv-python-gaussian-image-smoothing/
 
 
-def filtering_image_processing_bilateral(
+def image_processing_filtering_gaussian_blur(
         main_output_path,
         folder_index,
         sizes,
@@ -18,11 +17,11 @@ def filtering_image_processing_bilateral(
 ):
 
     print("*****************************************************")
+    print("Starting: image_processing_filtering_gaussian_blur()")
     print("*****************************************************")
-    print("Starting: filtering_image_processing_bilateral()")
 
     # Путь к сохраняемым файлам
-    output_path = main_output_path + "/" + str(folder_index).zfill(4) + "_filtering_bilateral"
+    output_path = main_output_path + "/" + str(folder_index).zfill(4) + "_filtering_gaussian_blur"
 
     # Создает папку, если ее не существует
     pathlib\
@@ -47,12 +46,11 @@ def filtering_image_processing_bilateral(
         image_process_and_save(
             output_path,
             image_index,
-            "_bilateral_size_" + str(size).zfill(4),
-            cv2.bilateralFilter,
+            "_gaussian_blur_size_" + str(size).zfill(4),
+            cv2.GaussianBlur,
             image,
-            size,
-            75,
-            75
+            (size, size),
+            cv2.BORDER_DEFAULT
         )
 
         image_index += 1

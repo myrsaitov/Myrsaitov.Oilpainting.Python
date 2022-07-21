@@ -22,6 +22,7 @@ def image_process_and_save(
 
     # Если файл существует, то он не перезаписывается
     if os.path.exists(file_path):
+        print("File exists! The old version remains!")
         return
 
     # Выполнение преобразования с переданной функцией и аргументами к ней

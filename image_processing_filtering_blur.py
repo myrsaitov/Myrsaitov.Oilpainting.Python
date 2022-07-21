@@ -1,15 +1,14 @@
 import pathlib
 import cv2
 
-from image_process_and_save import image_process_and_save
-from image_save import image_save
+from process_and_save_result import image_process_and_save
+from save_image import image_save
 
 
 # https://opencv24-python-tutorials.readthedocs.io/en/latest/py_tutorials/py_imgproc/py_filtering/py_filtering.html
-# https://opencv24-python-tutorials.readthedocs.io/en/latest/py_tutorials/py_imgproc/py_filtering/py_filtering.html
 
 
-def filtering_image_processing_median_blur(
+def image_processing_filtering_blur(
         main_output_path,
         folder_index,
         sizes,
@@ -17,11 +16,11 @@ def filtering_image_processing_median_blur(
 ):
 
     print("*****************************************************")
+    print("Starting: image_processing_filtering_blur()")
     print("*****************************************************")
-    print("Starting: filtering_image_processing_median_blur()")
 
     # Путь к сохраняемым файлам
-    output_path = main_output_path + "/" + str(folder_index).zfill(4) + "_filtering_median_blur"
+    output_path = main_output_path + "/" + str(folder_index).zfill(4) + "_filtering_blur"
 
     # Создает папку, если ее не существует
     pathlib\
@@ -46,10 +45,10 @@ def filtering_image_processing_median_blur(
         image_process_and_save(
             output_path,
             image_index,
-            "_median_blur_size_" + str(size).zfill(4),
-            cv2.medianBlur,
+            "_blur_size_" + str(size).zfill(4),
+            cv2.blur,
             image,
-            size
+            (size, size)
         )
 
         image_index += 1

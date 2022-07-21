@@ -2,8 +2,8 @@ import pathlib
 import numpy as np
 import cv2
 
-from image_process_and_save import image_process_and_save
-from image_save import image_save
+from process_and_save_result import image_process_and_save
+from save_image import image_save
 
 
 # https://neptune.ai/blog/image-processing-python
@@ -11,7 +11,7 @@ from image_save import image_save
 # https://appdividend.com/2022/03/15/python-cv2-dilate/
 
 
-def morphological_image_processing(
+def image_processing_morphological(
         main_output_path,
         folder_index,
         size,
@@ -19,8 +19,8 @@ def morphological_image_processing(
 ):
 
     print("*****************************************************")
+    print("Starting: image_processing_morphological()")
     print("*****************************************************")
-    print("Starting: morphological_image_processing()")
 
     # Путь к сохраняемым файлам
     output_path = main_output_path + "/" + str(folder_index).zfill(4) + "_morphological"
