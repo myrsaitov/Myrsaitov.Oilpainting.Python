@@ -116,12 +116,12 @@ def main(argv):
     folder_index += 1
 
     # Fourier Transform
-    image_processing_fourier_transform(
+    fft = image_processing_fourier_transform()
+    folder_index = fft.all_processes(
         output_path,
         folder_index,
         image
     )
-    folder_index += 1
 
     #################################################
     # Выход из программы
