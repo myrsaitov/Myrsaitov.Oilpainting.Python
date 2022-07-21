@@ -60,7 +60,7 @@ class image_processing_fourier_transform(object):
         processed_img = np.fft.ifft2(inv_center)
 
         # Lowpass Filter
-        LowPassCenter = center * self.idealFilterLP(50, gray_image.shape)
+        LowPassCenter = center * self.__idealFilterLP(50, gray_image.shape)
         LowPass = np.fft.ifftshift(LowPassCenter)
         inverse_LowPass = np.fft.ifft2(LowPass)
 
@@ -148,64 +148,64 @@ class image_processing_fourier_transform(object):
         return folder_index + 1
 
 
-    def distance(self, point1, point2):
+    def __distance(self, point1, point2):
         return sqrt((point1[0] - point2[0]) ** 2 + (point1[1] - point2[1]) ** 2)
 
 
-    def idealFilterLP(self, D0, imgShape):
+    def __idealFilterLP(self, D0, imgShape):
         base = np.zeros(imgShape[:2])
         rows, cols = imgShape[:2]
         center = (rows / 2, cols / 2)
         for x in range(cols):
             for y in range(rows):
-                if self.distance((y, x), center) < D0:
+                if self.__distance((y, x), center) < D0:
                     base[y, x] = 1
         return base
 
-    def idealFilterHP(self, D0, imgShape):
+    def __idealFilterHP(self, D0, imgShape):
         base = np.ones(imgShape[:2])
         rows, cols = imgShape[:2]
         center = (rows / 2, cols / 2)
         for x in range(cols):
             for y in range(rows):
-                if self.distance((y, x), center) < D0:
+                if self.__distance((y, x), center) < D0:
                     base[y, x] = 0
         return base
 
-    def butterworthLP(self, D0, imgShape, n):
+    def __butterworthLP(self, D0, imgShape, n):
         base = np.zeros(imgShape[:2])
         rows, cols = imgShape[:2]
         center = (rows / 2, cols / 2)
         for x in range(cols):
             for y in range(rows):
-                base[y, x] = 1 / (1 + (self.distance((y, x), center) / D0) ** (2 * n))
+                base[y, x] = 1 / (1 + (self.__distance((y, x), center) / D0) ** (2 * n))
         return base
 
-    def butterworthHP(self, D0, imgShape, n):
+    def __butterworthHP(self, D0, imgShape, n):
         base = np.zeros(imgShape[:2])
         rows, cols = imgShape[:2]
         center = (rows / 2, cols / 2)
         for x in range(cols):
             for y in range(rows):
-                base[y, x] = 1 - 1 / (1 + (self.distance((y, x), center) / D0) ** (2 * n))
+                base[y, x] = 1 - 1 / (1 + (self.__distance((y, x), center) / D0) ** (2 * n))
         return base
 
-    def gaussianLP(self, D0, imgShape):
+    def __gaussianLP(self, D0, imgShape):
         base = np.zeros(imgShape[:2])
         rows, cols = imgShape[:2]
         center = (rows / 2, cols / 2)
         for x in range(cols):
             for y in range(rows):
-                base[y, x] = exp(((-self.distance((y, x), center) ** 2) / (2 * (D0 ** 2))))
+                base[y, x] = exp(((-self.__distance((y, x), center) ** 2) / (2 * (D0 ** 2))))
         return base
 
-    def gaussianHP(self, D0, imgShape):
+    def __gaussianHP(self, D0, imgShape):
         base = np.zeros(imgShape[:2])
         rows, cols = imgShape[:2]
         center = (rows / 2, cols / 2)
         for x in range(cols):
             for y in range(rows):
-                base[y, x] = 1 - exp(((-self.distance((y, x), center) ** 2) / (2 * (D0 ** 2))))
+                base[y, x] = 1 - exp(((-self.__distance((y, x), center) ** 2) / (2 * (D0 ** 2))))
         return base
 
     # Строит график по функции и массиву данных и сохраняет в файл
@@ -218,7 +218,7 @@ class image_processing_fourier_transform(object):
         # Имя файла и индексом
         indexed_filename = str(self.image_index).zfill(4) +\
                            "_" +\
-                           self.to_snake_case(tittle) + ".png"
+                           self.__to_snake_case(tittle) + ".png"
 
         print("Processing: " + indexed_filename)
 
@@ -246,7 +246,7 @@ class image_processing_fourier_transform(object):
         # Имя файла и индексом
         indexed_filename = str(self.image_index).zfill(4) + \
                            "_" + \
-                           self.to_snake_case(tittle) + ".png"
+                           self.__to_snake_case(tittle) + ".png"
 
         print("Processing: " + indexed_filename)
 
@@ -266,6 +266,6 @@ class image_processing_fourier_transform(object):
         return
 
     # Преобразует обычную строку в snake_case
-    def to_snake_case(self, string):
+    def __to_snake_case(self, string):
         words = re.findall(r'[A-Z]?[a-z]+|[A-Z]{2,}(?=[A-Z][a-z]|\d|\W|$)|\d+', string)
         return '_'.join(map(str.lower, words))

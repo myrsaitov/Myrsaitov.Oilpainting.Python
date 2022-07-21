@@ -116,8 +116,8 @@ def main(argv):
     folder_index += 1
 
     # Fourier Transform
-    fft = image_processing_fourier_transform()
-    folder_index = fft.all_processes(
+    fourier_service = image_processing_fourier_transform()
+    folder_index = fourier_service.all_processes(
         output_path,
         folder_index,
         image
