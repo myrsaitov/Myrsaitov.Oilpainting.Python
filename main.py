@@ -3,6 +3,9 @@ import getopt
 import cv2
 import pathlib
 
+import numpy as np
+import image_processing_fourier_filters
+
 from image_processing_filtering_bilateral import image_processing_filtering_bilateral
 from image_processing_filtering_blur import image_processing_filtering_blur
 from image_processing_filtering_gaussian_blur import image_processing_filtering_gaussian_blur
@@ -110,17 +113,77 @@ def main(argv):
     image_processing_filtering_bilateral(
         output_path,
         folder_index,
-        [5, 25, 50, 100, 200, 300, 1000],
+        [5, 25, 50, 100],  # , 200, 300, 1000],
         image
     )
     folder_index += 1
 
-    # Fourier Transform
-    fourier_service = image_processing_fourier_transform()
-    folder_index = fourier_service.all_processes(
+    # Fourier Transforms
+    fourier_service = image_processing_fourier_transform(
         output_path,
+        (6.4 * 5, 4.8 * 5)  # (6.4 * 25, 4.8 * 25))
+    )
+
+    # Преобразует исходное цветное изображение в оттенки серого
+    gray_image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+
+    folder_index = fourier_service.base_fourier_processing(
         folder_index,
-        image
+        gray_image
+    )
+
+    folder_index = fourier_service.lowpass_filter_processing(
+        folder_index,
+        gray_image
+    )
+
+    folder_index = fourier_service.lowpass_filter_processing_new_style(
+        "LowPass Filter Processing",
+        folder_index,
+        gray_image,
+        # (1) Действие над данными
+        # (2) Действие для вывода данных на плоскость
+        # (3) Заголовок
+        [
+
+            [
+                "Original gray image",
+                lambda x: x,
+                lambda x: x
+            ],
+
+            [
+                "Spectrum",
+                lambda x: np.fft.fft2(x),
+                lambda x: np.log(1 + np.abs(x)),
+            ],
+
+            [
+                "Centered Spectrum",
+                lambda x: np.fft.fftshift(x),
+                lambda x: np.log(1 + np.abs(x)),
+            ],
+
+            [
+                "Centered Spectrum multiply Low Pass Filter",
+                lambda x: x * image_processing_fourier_filters.idealFilterLP(50, gray_image.shape),
+                lambda x: np.log(1 + np.abs(x)),
+            ],
+
+            [
+                "Decentralize",
+                lambda x: np.fft.ifftshift(x),
+                lambda x: np.log(1 + np.abs(x)),
+            ],
+
+            [
+                "Processed Image",
+                lambda x: np.fft.ifft2(x),
+                lambda x: np.abs(x),
+            ],
+
+        ]
+
     )
 
     #################################################
