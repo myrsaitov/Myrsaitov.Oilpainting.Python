@@ -4,13 +4,13 @@ import cv2
 import pathlib
 
 import numpy as np
-import image_processing_fourier_filters
 
 from image_processing_filtering_bilateral import image_processing_filtering_bilateral
 from image_processing_filtering_blur import image_processing_filtering_blur
 from image_processing_filtering_gaussian_blur import image_processing_filtering_gaussian_blur
 from image_processing_filtering_median_blur import image_processing_filtering_median_blur
-from image_processing_fourier_transform import image_processing_fourier_transform
+from image_processing_fourier_transform import fourier_image_processing, ideal_low_pass_filter, ideal_high_pass_filter, \
+    fourier_base_processing, fourier_filter_processing
 from image_processing_morphological import image_processing_morphological
 
 
@@ -72,7 +72,10 @@ def main(argv):
     # Индекс папки
     folder_index = 1
 
+
+    ######################################################################
     # Morphological Image Processing
+    ######################################################################
     image_processing_morphological(
         output_path,
         folder_index,
@@ -80,6 +83,11 @@ def main(argv):
         image
     )
     folder_index += 1
+
+
+    ######################################################################
+    # Filtering
+    ######################################################################
 
     # Filtering Image Processing: Blur
     image_processing_filtering_blur(
@@ -118,29 +126,41 @@ def main(argv):
     )
     folder_index += 1
 
+
+    ######################################################################
     # Fourier Transforms
-    fourier_service = image_processing_fourier_transform(
-        output_path,
-        (6.4 * 5, 4.8 * 5)  # (6.4 * 25, 4.8 * 25))
-    )
+    ######################################################################
 
     # Преобразует исходное цветное изображение в оттенки серого
     gray_image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
 
-    folder_index = fourier_service.base_fourier_processing(
+    # Размер координатной плоскости для построения результатов
+    figure_size = (6.4 * 5, 4.8 * 5)  # (6.4 * 25, 4.8 * 25))
+
+    folder_index = fourier_base_processing(
+        "Base Fourier Processing",
+        output_path,
         folder_index,
+        figure_size,
         gray_image
     )
 
-    folder_index = fourier_service.lowpass_filter_processing(
+    folder_index = fourier_filter_processing(
+        "Ideal LowPass Filter Processing",
+        output_path,
         folder_index,
-        gray_image
-    )
-
-    folder_index = fourier_service.lowpass_filter_processing_new_style(
-        "LowPass Filter Processing",
-        folder_index,
+        figure_size,
         gray_image,
+        [10, 50, 100, 150]
+    )
+
+    folder_index = fourier_image_processing(
+        "Ideal HighPass Filter Processing",
+        output_path,
+        folder_index,
+        figure_size,
+        gray_image,
+
         # (1) Действие над данными
         # (2) Действие для вывода данных на плоскость
         # (3) Заголовок
@@ -155,32 +175,32 @@ def main(argv):
             [
                 "Spectrum",
                 lambda x: np.fft.fft2(x),
-                lambda x: np.log(1 + np.abs(x)),
+                lambda x: np.log(1 + np.abs(x))
             ],
 
             [
                 "Centered Spectrum",
                 lambda x: np.fft.fftshift(x),
-                lambda x: np.log(1 + np.abs(x)),
+                lambda x: np.log(1 + np.abs(x))
             ],
 
             [
-                "Centered Spectrum multiply Low Pass Filter",
-                lambda x: x * image_processing_fourier_filters.idealFilterLP(50, gray_image.shape),
-                lambda x: np.log(1 + np.abs(x)),
+                "Centered Spectrum multiply High Pass Filter",
+                lambda x: x * ideal_high_pass_filter(200, gray_image.shape),
+                lambda x: np.log(1 + np.abs(x))
             ],
 
             [
                 "Decentralize",
                 lambda x: np.fft.ifftshift(x),
-                lambda x: np.log(1 + np.abs(x)),
+                lambda x: np.log(1 + np.abs(x))
             ],
 
             [
                 "Processed Image",
                 lambda x: np.fft.ifft2(x),
-                lambda x: np.abs(x),
-            ],
+                lambda x: np.abs(x)
+            ]
 
         ]
 
