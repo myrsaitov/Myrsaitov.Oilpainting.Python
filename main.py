@@ -9,8 +9,8 @@ from image_processing_filtering_bilateral import image_processing_filtering_bila
 from image_processing_filtering_blur import image_processing_filtering_blur
 from image_processing_filtering_gaussian_blur import image_processing_filtering_gaussian_blur
 from image_processing_filtering_median_blur import image_processing_filtering_median_blur
-from image_processing_fourier_transform import fourier_image_processing, ideal_low_pass_filter, ideal_high_pass_filter, \
-    fourier_base_processing, fourier_filter_processing
+from image_processing_fourier_transform import fourier_image_processing, ideal_high_pass_filter, \
+    fourier_processing, ideal_low_pass_filter
 from image_processing_morphological import image_processing_morphological
 
 
@@ -137,73 +137,70 @@ def main(argv):
     # Размер координатной плоскости для построения результатов
     figure_size = (6.4 * 5, 4.8 * 5)  # (6.4 * 25, 4.8 * 25))
 
-    folder_index = fourier_base_processing(
-        "Base Fourier Processing",
-        output_path,
-        folder_index,
-        figure_size,
-        gray_image
-    )
-
-    folder_index = fourier_filter_processing(
+    folder_index = fourier_processing(
+        False,  # Enable or disable
         "Ideal LowPass Filter Processing",
         output_path,
         folder_index,
         figure_size,
         gray_image,
-        [10, 50, 100, 150]
+        lambda f, shape: ideal_low_pass_filter(f, shape),
+        range(0, 400, 10)
     )
 
-    folder_index = fourier_image_processing(
+    folder_index = fourier_processing(
+        False,  # Enable or disable
         "Ideal HighPass Filter Processing",
         output_path,
         folder_index,
         figure_size,
         gray_image,
+        lambda f, shape: ideal_high_pass_filter(f, shape),
+        range(0, 400, 10)
+    )
 
-        # (1) Действие над данными
-        # (2) Действие для вывода данных на плоскость
-        # (3) Заголовок
-        [
+    folder_index = fourier_processing(
+        False,  # Enable or disable
+        "Ideal Band Filter Processing (10 Hz)",
+        output_path,
+        folder_index,
+        figure_size,
+        gray_image,
+        lambda f, shape: ideal_low_pass_filter(f + 10, shape)*ideal_high_pass_filter(f, shape),
+        range(0, 400, 10)
+    )
 
-            [
-                "Original gray image",
-                lambda x: x,
-                lambda x: x
-            ],
+    folder_index = fourier_processing(
+        False,  # Enable or disable
+        "Ideal Band Filter Processing (50 Hz)",
+        output_path,
+        folder_index,
+        figure_size,
+        gray_image,
+        lambda f, shape: ideal_low_pass_filter(f + 50, shape)*ideal_high_pass_filter(f, shape),
+        range(0, 400, 10)
+    )
 
-            [
-                "Spectrum",
-                lambda x: np.fft.fft2(x),
-                lambda x: np.log(1 + np.abs(x))
-            ],
+    folder_index = fourier_processing(
+        False,  # Enable or disable
+        "Ideal Rejector Filter Processing (10 Hz)",
+        output_path,
+        folder_index,
+        figure_size,
+        gray_image,
+        lambda f, shape: 1 - ideal_low_pass_filter(f + 10, shape)*ideal_high_pass_filter(f, shape),
+        range(0, 400, 10)
+    )
 
-            [
-                "Centered Spectrum",
-                lambda x: np.fft.fftshift(x),
-                lambda x: np.log(1 + np.abs(x))
-            ],
-
-            [
-                "Centered Spectrum multiply High Pass Filter",
-                lambda x: x * ideal_high_pass_filter(200, gray_image.shape),
-                lambda x: np.log(1 + np.abs(x))
-            ],
-
-            [
-                "Decentralize",
-                lambda x: np.fft.ifftshift(x),
-                lambda x: np.log(1 + np.abs(x))
-            ],
-
-            [
-                "Processed Image",
-                lambda x: np.fft.ifft2(x),
-                lambda x: np.abs(x)
-            ]
-
-        ]
-
+    folder_index = fourier_processing(
+        False,  # Enable or disable
+        "Ideal Rejector Filter Processing (50 Hz)",
+        output_path,
+        folder_index,
+        figure_size,
+        gray_image,
+        lambda f, shape: 1 - ideal_low_pass_filter(f + 50, shape)*ideal_high_pass_filter(f, shape),
+        range(0, 400, 10)
     )
 
     #################################################

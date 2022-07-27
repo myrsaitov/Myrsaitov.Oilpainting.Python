@@ -16,87 +16,27 @@ from to_snake_case import to_snake_case
 # https://robotclass.ru/tutorials/opencv-python-find-contours/
 # https://medium.com/nuances-of-programming/%D0%BE%D0%B1%D0%BD%D0%B0%D1%80%D1%83%D0%B6%D0%B5%D0%BD%D0%B8%D0%B5-%D0%BE%D0%B1%D1%8A%D0%B5%D0%BA%D1%82%D0%BE%D0%B2-%D1%81-%D0%BF%D0%BE%D0%BC%D0%BE%D1%89%D1%8C%D1%8E-%D1%86%D0%B2%D0%B5%D1%82%D0%BE%D0%B2%D0%BE%D0%B9-%D1%81%D0%B5%D0%B3%D0%BC%D0%B5%D0%BD%D1%82%D0%B0%D1%86%D0%B8%D0%B8-%D0%B8%D0%B7%D0%BE%D0%B1%D1%80%D0%B0%D0%B6%D0%B5%D0%BD%D0%B8%D0%B9-%D0%B2-python-9128814bc55c
 
-def fourier_base_processing(
-        main_tittle,
-        base_output_path,
-        folder_index,
-        figure_size,
-        gray_image
+def fourier_processing(
+    is_enabled,
+    main_tittle,
+    base_output_path,
+    folder_index,
+    figure_size,
+    gray_image,
+    filter_lambda_function,
+    freqs
 ):
-    return fourier_image_processing(
-        main_tittle,
-        base_output_path,
-        folder_index,
-        figure_size,
-        gray_image,
 
-        # (1) Действие над данными
-        # (2) Действие для вывода данных на плоскость
-        # (3) Заголовок
-        [
-
-            [
-                "Original gray image",
-                lambda x: x,
-                lambda x: x
-            ],
-
-            [
-                "Spectrum",
-                lambda x: np.fft.fft2(x),
-                lambda x: np.log(1 + np.abs(x))
-            ],
-
-            [
-                "Spectrum2",
-                lambda x: x,
-                lambda x: np.log(np.abs(x))
-            ],
-
-            [
-                "Phase Angle",
-                lambda x: x,
-                lambda x: np.angle(x)
-            ],
-
-            [
-                "Centered Spectrum",
-                lambda x: np.fft.fftshift(x),
-                lambda x: np.log(1 + np.abs(x))
-            ],
-
-            [
-                "Decentralize",
-                lambda x: np.fft.ifftshift(x),
-                lambda x: np.log(1 + np.abs(x))
-            ],
-
-            [
-                "Processed Image",
-                lambda x: np.fft.ifft2(x),
-                lambda x: np.abs(x)
-            ],
-
-        ]
-
-    )
-
-
-def fourier_filter_processing(
-        main_tittle,
-        base_output_path,
-        folder_index,
-        figure_size,
-        gray_image,
-        freqs
-):
-    index = folder_index
+    # Если процедура отключена
+    if not is_enabled:
+        print(main_tittle + "is disabled! Return!")
+        return folder_index + 1
 
     for freq in freqs:
-        index = fourier_image_processing(
+        fourier_image_processing(
             main_tittle,
             base_output_path,
-            index,
+            folder_index,
             figure_size,
             gray_image,
 
@@ -118,14 +58,26 @@ def fourier_filter_processing(
                 ],
 
                 [
+                    "Spectrum-2",
+                    lambda x: x,
+                    lambda x: np.log(np.abs(x))
+                ],
+
+                [
+                    "Phase Angle",
+                    lambda x: x,
+                    lambda x: np.angle(x)
+                ],
+
+                [
                     "Centered Spectrum",
                     lambda x: np.fft.fftshift(x),
                     lambda x: np.log(1 + np.abs(x))
                 ],
 
                 [
-                    "Centered Spectrum multiply Low Pass Filter" + "Freq" + str(freq).zfill(4),
-                    lambda x: x * ideal_low_pass_filter(freq, gray_image.shape),
+                    "Centered Spectrum multiply Filter" + "Freq" + str(freq).zfill(4),
+                    lambda x: x * filter_lambda_function(freq, gray_image.shape),
                     lambda x: np.log(1 + np.abs(x))
                 ],
 
@@ -136,7 +88,7 @@ def fourier_filter_processing(
                 ],
 
                 [
-                    "Processed Image" + "Freq" + str(freq).zfill(4),
+                    "Processed Image" + "Freq" + str(freq).zfill(4) ,
                     lambda x: np.fft.ifft2(x),
                     lambda x: np.abs(x)
                 ]
@@ -145,7 +97,7 @@ def fourier_filter_processing(
 
         )
 
-    return index
+    return folder_index + 1
 
 
 # Главная процедура обработки данных
