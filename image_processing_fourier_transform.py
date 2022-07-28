@@ -17,27 +17,40 @@ from to_snake_case import to_snake_case
 # https://medium.com/nuances-of-programming/%D0%BE%D0%B1%D0%BD%D0%B0%D1%80%D1%83%D0%B6%D0%B5%D0%BD%D0%B8%D0%B5-%D0%BE%D0%B1%D1%8A%D0%B5%D0%BA%D1%82%D0%BE%D0%B2-%D1%81-%D0%BF%D0%BE%D0%BC%D0%BE%D1%89%D1%8C%D1%8E-%D1%86%D0%B2%D0%B5%D1%82%D0%BE%D0%B2%D0%BE%D0%B9-%D1%81%D0%B5%D0%B3%D0%BC%D0%B5%D0%BD%D1%82%D0%B0%D1%86%D0%B8%D0%B8-%D0%B8%D0%B7%D0%BE%D0%B1%D1%80%D0%B0%D0%B6%D0%B5%D0%BD%D0%B8%D0%B9-%D0%B2-python-9128814bc55c
 
 def fourier_processing(
-    is_enabled,
     main_tittle,
-    base_output_path,
-    folder_index,
-    figure_size,
+    output_path_root,
     gray_image,
     filter_lambda_function,
     freqs
 ):
 
-    # Если процедура отключена
-    if not is_enabled:
-        print(main_tittle + "is disabled! Return!")
-        return folder_index + 1
+    print("*****************************************************")
+    print("Starting: ", main_tittle)
+    print("*****************************************************")
+
+    # Путь к сохраняемым файлам
+    output_path = output_path_root + \
+                  "/" + to_snake_case(main_tittle)
+
+    # Если папка существует, то действия не требуются
+    if os.path.exists(output_path):
+        print("The folder exists! The old version remains!")
+        return
+    else:
+        # Создает папку, если ее не существует
+        pathlib \
+            .Path(output_path) \
+            .mkdir(parents=True, exist_ok=True)
+
+    # Размер координатной плоскости для построения результатов
+    figure_size = (6.4 * 5, 4.8 * 5)  # (6.4 * 25, 4.8 * 25))
+
+    # Конфигурирует плоскость построения графиков
+    plt.figure(figsize=figure_size, constrained_layout=False)
 
     for freq in freqs:
         fourier_image_processing(
-            main_tittle,
-            base_output_path,
-            folder_index,
-            figure_size,
+            output_path,
             gray_image,
 
             # (1) Действие над данными
@@ -97,36 +110,13 @@ def fourier_processing(
 
         )
 
-    return folder_index + 1
-
 
 # Главная процедура обработки данных
 def fourier_image_processing(
-        main_tittle,
-        base_output_path,
-        folder_index,
-        figure_size,
+        output_path,
         gray_image,
         process_options
 ):
-    print("*****************************************************")
-    print("Starting: ", main_tittle)
-    print("*****************************************************")
-
-    # Путь к сохраняемым файлам
-    output_path = base_output_path + \
-                  "/" + \
-                  str(folder_index).zfill(4) + \
-                  "_" + \
-                  to_snake_case(main_tittle)
-
-    # Создает папку, если ее не существует
-    pathlib \
-        .Path(output_path) \
-        .mkdir(parents=True, exist_ok=True)
-
-    # Конфигурирует плоскость построения графиков
-    plt.figure(figsize=figure_size, constrained_layout=False)
 
     # Хранит данные между итерациями
     data = gray_image
@@ -143,7 +133,7 @@ def fourier_image_processing(
 
         # Если файл существует, то ничего не делаем
         if os.path.exists(output_path + "/" + filename):
-            print("File exists! The old version remains!")
+            print("The file exists! The old version remains!")
             continue
 
         # Построение
@@ -160,8 +150,6 @@ def fourier_image_processing(
     print("*****************************************************")
     print()
     print()
-
-    return folder_index + 1
 
 
 def distance(point1, point2):

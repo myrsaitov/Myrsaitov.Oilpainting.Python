@@ -1,9 +1,8 @@
+import inspect
+import os
 import pathlib
 import numpy as np
 import cv2
-
-from process_and_save_result import image_process_and_save
-from save_image import image_save
 
 
 # https://neptune.ai/blog/image-processing-python
@@ -13,17 +12,16 @@ from save_image import image_save
 
 def image_processing_morphological(
         main_output_path,
-        folder_index,
         size,
         image
 ):
 
     print("*****************************************************")
-    print("Starting: image_processing_morphological()")
+    print("Starting: ", inspect.currentframe().f_code.co_name)
     print("*****************************************************")
 
     # Путь к сохраняемым файлам
-    output_path = main_output_path + "/" + str(folder_index).zfill(4) + "_morphological"
+    output_path = main_output_path + "/morphological"
 
     # Создает папку, если ее не существует
     pathlib\
@@ -38,7 +36,11 @@ def image_processing_morphological(
         (size, size),
         'uint8')
 
+
+    ##############################################
     # Выполняет "Dilate"
+    ##############################################
+
     for iterations in reversed(range(1, 10)):
 
         image_process_and_save(
@@ -53,17 +55,27 @@ def image_processing_morphological(
 
         image_index += 1
 
-    # Сохраняет оригинал
-    image_save(
-        output_path,
-        image_index,
-        "_original",
-        image
-    )
+
+    ##############################################
+    # Сохраняет оригинальный файл
+    ##############################################
+
+    # Добавляет индекс в начале файла для удобства сортировки по имени
+    original_file_path = output_path + "/" + str(image_index).zfill(4) + "_original.jpg"
+
+    # Если файл существует, то он не перезаписывается
+    if os.path.exists(original_file_path):
+        print("File exists! The old version remains!")
+    else:
+        cv2.imwrite(original_file_path, image)
 
     image_index += 1
 
+
+    ##############################################
     # Выполняет "Erode"
+    ##############################################
+
     for iterations in range(1, 10):
         image_process_and_save(
             output_path,
@@ -83,3 +95,35 @@ def image_processing_morphological(
     print("*****************************************************")
     print()
     print()
+
+
+# Если файл с таким именем существует,
+# то ничего не происходит, иначе проводится
+# обработка изображения и записывается в файл.
+# Это нужно, чтобы пропускать обработку,
+# если файл уже имеется.
+def image_process_and_save(
+        path,
+        index,
+        suffix,
+        image_processing_func,      # Функция для преобразования изображения
+        *function_arguments,        # Позиционные аргументы функции
+        **named_function_arguments  # Именованные аргументы функции, например: iterations=5
+):                                  # https://tproger.ru/translations/python-args-and-kwargs/
+                                    # https://python.ivan-shamaev.ru/python-3-functions-value-arguments-call-variables-arrays/
+
+    # Добавляет индекс в начале файла для удобства сортировки по имени
+    file_path = path + "/" + str(index).zfill(4) + suffix + ".jpg"
+
+    # Если файл существует, то он не перезаписывается
+    if os.path.exists(file_path):
+        print("File exists! The old version remains!")
+        return
+
+    # Выполнение преобразования с переданной функцией и аргументами к ней
+    image = image_processing_func(*function_arguments, **named_function_arguments)
+
+    # Запись файла
+    cv2.imwrite(file_path, image)
+
+    print("Saved: ", file_path)

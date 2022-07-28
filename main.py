@@ -3,13 +3,8 @@ import getopt
 import cv2
 import pathlib
 
-import numpy as np
-
-from image_processing_filtering_bilateral import image_processing_filtering_bilateral
-from image_processing_filtering_blur import image_processing_filtering_blur
-from image_processing_filtering_gaussian_blur import image_processing_filtering_gaussian_blur
-from image_processing_filtering_median_blur import image_processing_filtering_median_blur
-from image_processing_fourier_transform import fourier_image_processing, ideal_high_pass_filter, \
+from image_processing_filtering import image_processing_filtering
+from image_processing_fourier_transform import ideal_high_pass_filter, \
     fourier_processing, ideal_low_pass_filter
 from image_processing_morphological import image_processing_morphological
 
@@ -17,7 +12,7 @@ from image_processing_morphological import image_processing_morphological
 # Определение функции main
 def main(argv):
     input_path = ''
-    output_path = ''
+    output_path_root = ''
 
     #################################################
     # Считывает параметры командной строки
@@ -35,14 +30,14 @@ def main(argv):
         elif opt in ("-i", "--ipath"):
             input_path = arg
         elif opt in ("-o", "--opath"):
-            output_path = arg
+            output_path_root = arg
 
     # Если входной путь не задан, то выход
     if input_path == "":
         print("Enter input path!")
         sys.exit()
     # Если выходной путь не задан, то выход
-    if output_path == "":
+    if output_path_root == "":
         print("Enter output path!")
         sys.exit()
 
@@ -53,11 +48,11 @@ def main(argv):
 
     # TODO find files in SRC dir
     filename = "image1.jpg"
-    output_path += "/" + filename[:-4]
+    output_path_root += "/" + filename[:-4]
 
     # Создает папку, если ее не существует
     pathlib \
-        .Path(output_path) \
+        .Path(output_path_root) \
         .mkdir(parents=True, exist_ok=True)
 
     # Открывает исходный файл
@@ -69,20 +64,15 @@ def main(argv):
     # Обработка изображений
     #################################################
 
-    # Индекс папки
-    folder_index = 1
-
 
     ######################################################################
     # Morphological Image Processing
     ######################################################################
     image_processing_morphological(
-        output_path,
-        folder_index,
+        output_path_root,
         5,  # Здесь нет диапазона, указывается только число
         image
     )
-    folder_index += 1
 
 
     ######################################################################
@@ -90,42 +80,50 @@ def main(argv):
     ######################################################################
 
     # Filtering Image Processing: Blur
-    image_processing_filtering_blur(
-        output_path,
-        folder_index,
-        range(1, 20),
-        image
-    )
-    folder_index += 1
+    for size in range(1, 20):
+        image_processing_filtering(
+            "Filtering: Blur",
+            output_path_root,
+            cv2.blur,
+            image,
+            (size, size)
+        )
 
     # Filtering Image Processing: Gaussian Blur
-    image_processing_filtering_gaussian_blur(
-        output_path,
-        folder_index,
-        [5],
-        image
-    )
-    folder_index += 1
+    # Только нечетные значения size!
+    for size in range(1, 50, 4):
+        image_processing_filtering(
+            "Filtering: Gaussian Blur",
+            output_path_root,
+            cv2.GaussianBlur,
+            image,
+            (size, size),
+            cv2.BORDER_DEFAULT
+        )
 
     # Filtering Image Processing: Median Blur
-    image_processing_filtering_median_blur(
-        output_path,
-        folder_index,
-        [5],
-        image
-    )
-    folder_index += 1
+    # Только нечетные значения size!
+    for size in range(1, 50, 4):
+        image_processing_filtering(
+            "Filtering: Median Blur",
+            output_path_root,
+            cv2.medianBlur,
+            image,
+            size
+        )
 
     # Filtering Image Processing: Bilateral
     # Можно использовать для проверки, получился ли передний план (все остальное блекнет)
-    image_processing_filtering_bilateral(
-        output_path,
-        folder_index,
-        [5, 25, 50, 100],  # , 200, 300, 1000],
-        image
-    )
-    folder_index += 1
-
+    for size in [5, 25, 50, 100]:  # , 200, 300, 1000],:
+        image_processing_filtering(
+            "Filtering: Bilateral Blur",
+            output_path_root,
+            cv2.bilateralFilter,
+            image,
+            size,
+            75,
+            75
+        )
 
     ######################################################################
     # Fourier Transforms
@@ -134,74 +132,60 @@ def main(argv):
     # Преобразует исходное цветное изображение в оттенки серого
     gray_image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
 
-    # Размер координатной плоскости для построения результатов
-    figure_size = (6.4 * 5, 4.8 * 5)  # (6.4 * 25, 4.8 * 25))
-
-    folder_index = fourier_processing(
-        False,  # Enable or disable
-        "Ideal LowPass Filter Processing",
-        output_path,
-        folder_index,
-        figure_size,
+    fourier_processing(
+        "Fourier Processing: Ideal LowPass Filter",
+        output_path_root,
         gray_image,
         lambda f, shape: ideal_low_pass_filter(f, shape),
         range(0, 400, 10)
     )
 
-    folder_index = fourier_processing(
-        False,  # Enable or disable
-        "Ideal HighPass Filter Processing",
-        output_path,
-        folder_index,
-        figure_size,
+    fourier_processing(
+        "Fourier Processing: Ideal HighPass Filter",
+        output_path_root,
         gray_image,
         lambda f, shape: ideal_high_pass_filter(f, shape),
         range(0, 400, 10)
     )
 
-    folder_index = fourier_processing(
-        False,  # Enable or disable
-        "Ideal Band Filter Processing (10 Hz)",
-        output_path,
-        folder_index,
-        figure_size,
+    fourier_processing(
+        "Fourier Processing: Ideal BandPass Filter (10 Hz)",
+        output_path_root,
         gray_image,
         lambda f, shape: ideal_low_pass_filter(f + 10, shape)*ideal_high_pass_filter(f, shape),
         range(0, 400, 10)
     )
 
-    folder_index = fourier_processing(
-        False,  # Enable or disable
-        "Ideal Band Filter Processing (50 Hz)",
-        output_path,
-        folder_index,
-        figure_size,
+    fourier_processing(
+        "Fourier Processing: Ideal BandPass Filter (50 Hz)",
+        output_path_root,
         gray_image,
         lambda f, shape: ideal_low_pass_filter(f + 50, shape)*ideal_high_pass_filter(f, shape),
         range(0, 400, 10)
     )
 
-    folder_index = fourier_processing(
-        False,  # Enable or disable
-        "Ideal Rejector Filter Processing (10 Hz)",
-        output_path,
-        folder_index,
-        figure_size,
+    fourier_processing(
+        "Fourier Processing: Ideal Rejector Filter (10 Hz)",
+        output_path_root,
         gray_image,
         lambda f, shape: 1 - ideal_low_pass_filter(f + 10, shape)*ideal_high_pass_filter(f, shape),
         range(0, 400, 10)
     )
 
-    folder_index = fourier_processing(
-        False,  # Enable or disable
-        "Ideal Rejector Filter Processing (50 Hz)",
-        output_path,
-        folder_index,
-        figure_size,
+    fourier_processing(
+        "Fourier Processing: Ideal Rejector Filter (50 Hz)",
+        output_path_root,
         gray_image,
         lambda f, shape: 1 - ideal_low_pass_filter(f + 50, shape)*ideal_high_pass_filter(f, shape),
         range(0, 400, 10)
     )
+
+
+    ######################################################################
+    # Dominate Colors
+    ######################################################################
+
+
 
     #################################################
     # Выход из программы
