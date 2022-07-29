@@ -6,6 +6,7 @@ import pathlib
 from image_processing_filtering import image_processing_filtering
 from image_processing_fourier_transform import ideal_high_pass_filter, \
     fourier_processing, ideal_low_pass_filter
+from image_processing_get_dominate_colors import image_processing_get_dominate_colors
 from image_processing_morphological import image_processing_morphological
 
 
@@ -185,7 +186,12 @@ def main(argv):
     # Dominate Colors
     ######################################################################
 
-
+    image_processing_get_dominate_colors(
+        "Get Dominate Colors",
+        output_path_root,
+        3,
+        image
+    )
 
     #################################################
     # Выход из программы

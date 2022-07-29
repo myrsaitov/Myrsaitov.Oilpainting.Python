@@ -79,7 +79,13 @@ def image_processing_filtering(
     # Полное имя файла
     file_path = output_path + "/" + to_snake_case(tittle) + suffix + ".jpg"
 
+    if os.path.exists(file_path):
+        print("File exists! The old version remains!")
+        return
+
     try:
+
+
         # Выполнение преобразования с переданной функцией и аргументами к ней
         processed_image = image_processing_func(*argv, **kwargs)
 

@@ -113,9 +113,9 @@ def fourier_processing(
 
 # Главная процедура обработки данных
 def fourier_image_processing(
-        output_path,
-        gray_image,
-        process_options
+    output_path,
+    gray_image,
+    process_options
 ):
 
     # Хранит данные между итерациями
@@ -140,7 +140,11 @@ def fourier_image_processing(
         plt.imshow(process_image(data).astype(np.uint8), "gray"), plt.title(tittle)
 
         # Сохранение
-        plt.savefig(output_path + '/' + filename, bbox_inches='tight')
+        plt.savefig(
+            output_path + '/' + filename,
+            dpi=300,
+            format='png',
+            bbox_inches='tight')
 
     plt.show()
 

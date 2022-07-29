@@ -11,9 +11,9 @@ import cv2
 
 
 def image_processing_morphological(
-        main_output_path,
-        size,
-        image
+    output_path_root,
+    size,
+    image
 ):
 
     print("*****************************************************")
@@ -21,12 +21,17 @@ def image_processing_morphological(
     print("*****************************************************")
 
     # Путь к сохраняемым файлам
-    output_path = main_output_path + "/morphological"
+    output_path = output_path_root + "/morphological"
 
-    # Создает папку, если ее не существует
-    pathlib\
-        .Path(output_path)\
-        .mkdir(parents=True, exist_ok=True)
+    # Если папка существует, то действия не требуются
+    if os.path.exists(output_path):
+        print("The folder exists! The old version remains!")
+        return
+    else:
+        # Создает папку, если ее не существует
+        pathlib \
+            .Path(output_path) \
+            .mkdir(parents=True, exist_ok=True)
 
     # Начальный индекс файла
     image_index = 1
@@ -103,14 +108,14 @@ def image_processing_morphological(
 # Это нужно, чтобы пропускать обработку,
 # если файл уже имеется.
 def image_process_and_save(
-        path,
-        index,
-        suffix,
-        image_processing_func,      # Функция для преобразования изображения
-        *function_arguments,        # Позиционные аргументы функции
-        **named_function_arguments  # Именованные аргументы функции, например: iterations=5
-):                                  # https://tproger.ru/translations/python-args-and-kwargs/
-                                    # https://python.ivan-shamaev.ru/python-3-functions-value-arguments-call-variables-arrays/
+    path,
+    index,
+    suffix,
+    image_processing_func,      # Функция для преобразования изображения
+    *function_arguments,        # Позиционные аргументы функции
+    **named_function_arguments  # Именованные аргументы функции, например: iterations=5
+):                              # https://tproger.ru/translations/python-args-and-kwargs/
+                                # https://python.ivan-shamaev.ru/python-3-functions-value-arguments-call-variables-arrays/
 
     # Добавляет индекс в начале файла для удобства сортировки по имени
     file_path = path + "/" + str(index).zfill(4) + suffix + ".jpg"
