@@ -1,5 +1,7 @@
 import os
 import pathlib
+
+import cv2
 import matplotlib.pyplot as plt
 import numpy as np
 from math import sqrt, exp
@@ -16,8 +18,67 @@ from to_snake_case import to_snake_case
 # https://robotclass.ru/tutorials/opencv-python-find-contours/
 # https://medium.com/nuances-of-programming/%D0%BE%D0%B1%D0%BD%D0%B0%D1%80%D1%83%D0%B6%D0%B5%D0%BD%D0%B8%D0%B5-%D0%BE%D0%B1%D1%8A%D0%B5%D0%BA%D1%82%D0%BE%D0%B2-%D1%81-%D0%BF%D0%BE%D0%BC%D0%BE%D1%89%D1%8C%D1%8E-%D1%86%D0%B2%D0%B5%D1%82%D0%BE%D0%B2%D0%BE%D0%B9-%D1%81%D0%B5%D0%B3%D0%BC%D0%B5%D0%BD%D1%82%D0%B0%D1%86%D0%B8%D0%B8-%D0%B8%D0%B7%D0%BE%D0%B1%D1%80%D0%B0%D0%B6%D0%B5%D0%BD%D0%B8%D0%B9-%D0%B2-python-9128814bc55c
 
+def fourier_processing_wrapper(
+    output_path_root,
+    image
+):
+
+    gray_image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+
+    fourier_processing(
+        "Fourier Processing: Ideal LowPass Filter",
+        output_path_root,
+        gray_image,
+        lambda f, shape: ideal_low_pass_filter(f, shape),
+        range(0, 400, 10)
+    )
+
+    fourier_processing(
+        "Fourier Processing: Ideal HighPass Filter",
+        output_path_root,
+        gray_image,
+        lambda f, shape: ideal_high_pass_filter(f, shape),
+        range(0, 400, 10)
+    )
+
+    fourier_processing(
+        "Fourier Processing: Ideal BandPass Filter (10 Hz)",
+        output_path_root,
+        gray_image,
+        lambda f, shape: ideal_low_pass_filter(f + 10, shape)*ideal_high_pass_filter(f, shape),
+        range(0, 400, 10)
+    )
+
+    fourier_processing(
+        "Fourier Processing: Ideal BandPass Filter (50 Hz)",
+        output_path_root,
+        gray_image,
+        lambda f, shape: ideal_low_pass_filter(f + 50, shape)*ideal_high_pass_filter(f, shape),
+        range(0, 400, 10)
+    )
+
+    fourier_processing(
+        "Fourier Processing: Ideal Rejector Filter (10 Hz)",
+        output_path_root,
+        gray_image,
+        lambda f, shape: 1 - ideal_low_pass_filter(f + 10, shape)*ideal_high_pass_filter(f, shape),
+        range(0, 400, 10)
+    )
+
+    fourier_processing(
+        "Fourier Processing: Ideal Rejector Filter (50 Hz)",
+        output_path_root,
+        gray_image,
+        lambda f, shape: 1 - ideal_low_pass_filter(f + 50, shape)*ideal_high_pass_filter(f, shape),
+        range(0, 400, 10)
+    )
+
+
+
+
+
 def fourier_processing(
-    main_tittle,
+    main_title,
     output_path_root,
     gray_image,
     filter_lambda_function,
@@ -25,12 +86,12 @@ def fourier_processing(
 ):
 
     print("*****************************************************")
-    print("Starting: ", main_tittle)
+    print("Starting: ", main_title)
     print("*****************************************************")
 
     # Путь к сохраняемым файлам
     output_path = output_path_root + \
-                  "/" + to_snake_case(main_tittle)
+                  "/" + to_snake_case(main_title)
 
     # Если папка существует, то действия не требуются
     if os.path.exists(output_path):
@@ -123,11 +184,11 @@ def fourier_image_processing(
 
     # В цикле обрабатывает данные и сохраняет графики
     for option in process_options:
-        tittle, process_data, process_image = option
+        title, process_data, process_image = option
         data = process_data(data)
 
         # Имя файла с индексом
-        filename = to_snake_case(tittle) + ".png"
+        filename = to_snake_case(title) + ".png"
 
         print("Processing: " + filename)
 
@@ -137,7 +198,7 @@ def fourier_image_processing(
             continue
 
         # Построение
-        plt.imshow(process_image(data).astype(np.uint8), "gray"), plt.title(tittle)
+        plt.imshow(process_image(data).astype(np.uint8), "gray"), plt.title(title)
 
         # Сохранение
         plt.savefig(

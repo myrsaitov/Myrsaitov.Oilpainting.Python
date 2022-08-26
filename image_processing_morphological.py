@@ -9,6 +9,15 @@ import cv2
 # https://www.geeksforgeeks.org/erosion-dilation-images-using-opencv-python/
 # https://appdividend.com/2022/03/15/python-cv2-dilate/
 
+def morphological_processing_wrapper(
+    output_path_root,
+    image
+):
+    image_processing_morphological(
+        output_path_root,
+        5,  # Здесь нет диапазона, указывается только число
+        image
+    )
 
 def image_processing_morphological(
     output_path_root,

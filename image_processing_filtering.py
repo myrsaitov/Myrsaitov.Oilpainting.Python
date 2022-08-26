@@ -23,9 +23,62 @@ from to_snake_case import to_snake_case
 # http://people.csail.mit.edu/sparis/bf_course/
 # Можно использовать для проверки, получился ли передний план (все остальное блекнет)
 
+def filter_processing_wrapper(
+    output_path_root,
+    image
+):
+
+    # Filtering Image Processing: Blur
+    for size in range(1, 20):
+        image_processing_filtering(
+            "Filtering: Blur",
+            output_path_root,
+            cv2.blur,
+            image,
+            (size, size)
+        )
+
+    # Filtering Image Processing: Gaussian Blur
+    # Только нечетные значения size!
+    for size in range(1, 50, 4):
+        image_processing_filtering(
+            "Filtering: Gaussian Blur",
+            output_path_root,
+            cv2.GaussianBlur,
+            image,
+            (size, size),
+            cv2.BORDER_DEFAULT
+        )
+
+    # Filtering Image Processing: Median Blur
+    # Только нечетные значения size!
+    for size in range(1, 50, 4):
+        image_processing_filtering(
+            "Filtering: Median Blur",
+            output_path_root,
+            cv2.medianBlur,
+            image,
+            size
+        )
+
+    # Filtering Image Processing: Bilateral
+    # Можно использовать для проверки, получился ли передний план (все остальное блекнет)
+    for size in [5, 25, 50, 100]:  # , 200, 300, 1000],:
+        image_processing_filtering(
+            "Filtering: Bilateral Blur",
+            output_path_root,
+            cv2.bilateralFilter,
+            image,
+            size,
+            75,
+            75
+        )
+
+
+
 # Процедура, реализующая фильтр
 def image_processing_filtering(
-        tittle,
+        title,
         output_path_root,
         image_processing_func,  # Функция для преобразования изображения
         *argv,  # Позиционные аргументы функции
@@ -34,7 +87,7 @@ def image_processing_filtering(
     # https://python.ivan-shamaev.ru/python-3-functions-value-arguments-call-variables-arrays/
 
     print("*****************************************************")
-    print("Starting: ", inspect.currentframe().f_code.co_name, ": ", tittle)
+    print("Starting: ", inspect.currentframe().f_code.co_name, ": ", title)
     print("*****************************************************")
 
     ##############################################
@@ -56,7 +109,7 @@ def image_processing_filtering(
     ##############################################
 
     # Путь к сохраняемым файлам
-    output_path = output_path_root + "/" + to_snake_case(tittle)
+    output_path = output_path_root + "/" + to_snake_case(title)
 
     # Создает папку, если ее не существует
     pathlib \
@@ -77,7 +130,7 @@ def image_processing_filtering(
     ##############################################
 
     # Полное имя файла
-    file_path = output_path + "/" + to_snake_case(tittle) + suffix + ".jpg"
+    file_path = output_path + "/" + to_snake_case(title) + suffix + ".jpg"
 
     if os.path.exists(file_path):
         print("File exists! The old version remains!")

@@ -26,16 +26,28 @@ Cluster = namedtuple('Cluster', ('points', 'center', 'n'))
 # https://charlesleifer.com/blog/using-python-and-k-means-to-find-the-dominant-colors-in-images/
 # I've been using this method for a few years. A neat extension to it enables you to determine a "foreground" and "background color. The cluster with the most pixels near the center of the image is "foreground". The cluster with the most pixels near the edges is "background".
 
+def dominate_colors_processing_wrapper(
+    output_path_root,
+    image
+):
+
+    image_processing_get_dominate_colors(
+        "Get Dominate Colors",
+        output_path_root,
+        3,
+        image
+    )
+
 # Процедура, реализующая фильтр
 def image_processing_get_dominate_colors(
-        tittle,
+        title,
         output_path_root,
         colors_count,
         image
 ):
 
     print("*****************************************************")
-    print("Starting: ", inspect.currentframe().f_code.co_name, ": ", tittle)
+    print("Starting: ", inspect.currentframe().f_code.co_name, ": ", title)
     print("*****************************************************")
 
     ##############################################
@@ -43,7 +55,7 @@ def image_processing_get_dominate_colors(
     ##############################################
 
     # Путь к сохраняемым файлам
-    output_path = output_path_root + "/" + to_snake_case(tittle)
+    output_path = output_path_root + "/" + to_snake_case(title)
 
     # Если папка существует, то действия не требуются
     if os.path.exists(output_path):
