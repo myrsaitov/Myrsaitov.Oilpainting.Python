@@ -1,5 +1,4 @@
 import numpy as np
-
 from functional_privitive import functional_primitive
 
 
