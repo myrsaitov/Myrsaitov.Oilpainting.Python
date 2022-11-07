@@ -9,7 +9,7 @@ call :setESC
 cls
 
 REM Печатает путь к репозиторию
-echo %ESC%[44mRepository path:%ESC%[0m 
+echo %ESC%[44mPath:%ESC%[0m 
 echo %ESC%[33m%CD%%ESC%[0m
 
 REM Печатает команду, которая будет выполнена
@@ -40,6 +40,7 @@ echo;
 pause
 
 REM Нужно для цветных сообщений
+goto:eof
 :setESC
 for /F "tokens=1,2 delims=#" %%a in ('"prompt #$H#$E# & echo on & for %%b in (1) do rem"') do (
   set ESC=%%b
